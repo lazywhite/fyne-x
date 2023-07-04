@@ -27,6 +27,7 @@ func (p paginationLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
 	totalWidth := float32(0)
 	for _, o := range objects {
 		maxHeight = fyne.Max(o.MinSize().Height, maxHeight)
+		totalWidth += fyne.Max(o.MinSize().Width, o.Size().Width)
 	}
 	return fyne.NewSize(totalWidth, maxHeight)
 }
@@ -65,6 +66,7 @@ func (p *Pagination) Reset() {
 // SetDefaultPageSize will set the default page size
 func (p *Pagination) SetDefaultPageSize(size int) {
 	p.defaultPageSize = size
+	p.pageSize.Set(size)
 }
 
 // SetTotalRows will set the total rows, also reset page, pageSize, total pages
@@ -146,6 +148,9 @@ func (p *Pagination) CreateRenderer() fyne.WidgetRenderer {
 		totalPages := p.GetTotalPages()
 		if targetPage < 1 {
 			return errors.New("page should not be smaller than 1")
+		}
+		if totalPages == 0 {
+			return nil
 		}
 		if targetPage > totalPages {
 			return errors.New("page should not bigger than total page")
